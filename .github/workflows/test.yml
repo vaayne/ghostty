@@ -293,6 +293,7 @@ jobs:
           $name = "${{ matrix.dir }}" -replace '-','_'
           $exe = "example/${{ matrix.dir }}/build/Debug/${name}.exe"
           if (!(Test-Path $exe)) { $exe = "example/${{ matrix.dir }}/build/${name}.exe" }
+          $env:PATH = "${{ github.workspace }}/zig-out/bin;$env:PATH"
           & $exe
 
   build-cmake:

@@ -121,10 +121,15 @@ pub fn build(b: *std.Build) !void {
             libghostty_vt_static.install(b.getInstallStep());
         } else {
             // If we're not a dependency, we rename the static lib to
-            // be idiomatic.
+            // be idiomatic. On Windows, we use a distinct name to avoid
+            // colliding with the DLL import library (ghostty-vt.lib).
+            const static_lib_name = if (config.target.result.os.tag == .windows)
+                "ghostty-vt-static.lib"
+            else
+                "libghostty-vt.a";
             b.getInstallStep().dependOn(&b.addInstallLibFile(
                 libghostty_vt_static.output,
-                "libghostty-vt.a",
+                static_lib_name,
             ).step);
         }
     }
