@@ -287,6 +287,14 @@ jobs:
           cmake -B build -DFETCHCONTENT_SOURCE_DIR_GHOSTTY=${{ github.workspace }}
           cmake --build build
 
+      - name: Run Example
+        shell: pwsh
+        run: |
+          $name = "${{ matrix.dir }}" -replace '-','_'
+          $exe = "example/${{ matrix.dir }}/build/Debug/${name}.exe"
+          if (!(Test-Path $exe)) { $exe = "example/${{ matrix.dir }}/build/${name}.exe" }
+          & $exe
+
   build-cmake:
     runs-on: namespace-profile-ghostty-sm
     needs: test
