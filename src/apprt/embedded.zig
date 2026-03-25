@@ -419,6 +419,11 @@ pub const Surface = struct {
     /// that getTitle works without the implementer needing to save it.
     title: ?[:0]const u8 = null,
 
+    /// Remote backend fds. When remote_read_fd >= 0, the surface uses
+    /// the Remote termio backend instead of Exec.
+    remote_read_fd: i32 = -1,
+    remote_write_fd: i32 = -1,
+
     /// Surface initialization options.
     pub const Options = extern struct {
         /// The platform that this surface is being initialized for and
@@ -460,6 +465,14 @@ pub const Surface = struct {
 
         /// Context for the new surface
         context: apprt.surface.NewSurfaceContext = .window,
+
+        /// Remote backend: file descriptor to read terminal output from.
+        /// Set to -1 (default) to use the normal exec backend.
+        /// When >= 0, the remote backend is used instead of exec.
+        remote_read_fd: i32 = -1,
+
+        /// Remote backend: file descriptor to write terminal input to.
+        remote_write_fd: i32 = -1,
     };
 
     pub fn init(self: *Surface, app: *App, opts: Options) !void {
@@ -572,6 +585,10 @@ pub const Surface = struct {
         if (opts.wait_after_command) {
             config.@"wait-after-command" = true;
         }
+
+        // Store remote backend fds
+        self.remote_read_fd = opts.remote_read_fd;
+        self.remote_write_fd = opts.remote_write_fd;
 
         // Initialize our surface right away. We're given a view that is
         // ready to use.

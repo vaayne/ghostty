@@ -450,6 +450,11 @@ typedef struct {
   const char* initial_input;
   bool wait_after_command;
   ghostty_surface_context_e context;
+  // Remote backend: fd pair for reading/writing terminal data.
+  // Set to -1 (default) to use the normal exec backend.
+  // When remote_read_fd >= 0, the remote backend is used.
+  int32_t remote_read_fd;
+  int32_t remote_write_fd;
 } ghostty_surface_config_s;
 
 typedef struct {
